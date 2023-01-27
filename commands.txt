@@ -1,0 +1,15 @@
+helm repo add external-secrets https://charts.external-secrets.io
+
+helm install external-secrets \
+   external-secrets/external-secrets \
+    -n external-secrets \
+    --create-namespace \
+    --set installCRDs=true
+
+---
+vault kv put eso/foo my-value=s3cr3t
+
+
+---
+# values.yaml
+https://github.com/external-secrets/external-secrets/blob/main/deploy/charts/external-secrets/values.yaml
