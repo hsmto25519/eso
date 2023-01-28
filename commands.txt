@@ -7,8 +7,11 @@ helm install external-secrets \
     --set installCRDs=true
 
 ---
-vault kv put eso/foo my-value=s3cr3t
+vault secrets enable -path=eso -version=2 kv
+vault kv put eso/foo my-value=mysecret01
 
+# vault policy write <POLICY_NAME> <POLICY_FILE>
+vault policy write eso-vault-client eso-vault-client.hcl
 
 ---
 # values.yaml
