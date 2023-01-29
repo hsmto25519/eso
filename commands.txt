@@ -8,7 +8,7 @@ helm install external-secrets \
 
 ---
 vault secrets enable -path=eso -version=2 -description="This secret engine is used the ESO to get secrets" kv
-vault kv put eso/foo my-value=mysecret01
+vault kv put eso/foo my-value=mysecret
 
 # prepare a role for vault
 kubectl create sa vault-auth -n vault
@@ -54,6 +54,9 @@ vault write auth/kubernetes/login role=eso-vault jwt=$token_reviewer_jwt
 # vault-backend with k8s auth
 kubectl apply -f ./secret-store-k8s-auth.yaml
 
+vault kv put eso/foo my-value=replace_secret
+
+
 ---
 # values.yaml
 https://github.com/external-secrets/external-secrets/blob/main/deploy/charts/external-secrets/values.yaml
@@ -64,7 +67,7 @@ windows上で動かすためのもの
 token_reviewer_jwt=eyJhbGciOiJSUzI1NiIsImtpZCI6IlhtaV9kckU0QnE0ckZGWHE2cV9PbG1FbXFRY1ljREYyeU1zSHJOTmtYSkEifQ.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJ2YXVsdCIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VjcmV0Lm5hbWUiOiJ2YXVsdC1hdXRoIiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZXJ2aWNlLWFjY291bnQubmFtZSI6InZhdWx0LWF1dGgiLCJrdWJlcm5ldGVzLmlvL3NlcnZpY2VhY2NvdW50L3NlcnZpY2UtYWNjb3VudC51aWQiOiJkMzVkNTZmZC0yNGYzLTQ1YjgtYTFlOS0yMGIxNWEwOGYxNzIiLCJzdWIiOiJzeXN0ZW06c2VydmljZWFjY291bnQ6dmF1bHQ6dmF1bHQtYXV0aCJ9.ZVA94W8YZfC35SY-v2PSBN4nIcw6tALFUh41W8IzLPnXhOxD1zY3kZ1sTwKywDpoGMTKk3b7cayPXtanWhuj9qQtJezBg7UdQXxfhWy5XCRgoW8LNpkW26KiaaenFIAnfS2TZswj-M3b3gSUBMmfN5LlJiqojgDid4qz3gnEhYrWZw88vWc80Qw8KIwv673XVrqJxgMDlVbWMxG8UoffBTyYE6sorr40Y7246nh_mDi2nIjbYm1oz5tPb5hHgxOXdhRTn0iAuaqALhVYS7ohstJzDxzEXvkJF5PA0ytJSq0Wz0hYC1b69Z86gM9xOZ9CqAIPiOMQed-u11UGsjx3VA
 host=kubernetes.default.svc.cluster.local
 vault write auth/kubernetes/config token_reviewer_jwt=$token_reviewer_jwt  kubernetes_host="https://$host:443"  kubernetes_ca_cert=@ca.cert
-vault write auth/kubernetes/role/eso-vault bound_service_account_names=vault-auth bound_service_account_namespaces=vault policies=default,eso-vault-client ttl=24h
+vault write auth/kubernetes/role/eso-vault bound_service_account_names=vault-auth bound_service_account_namespaces=vault policies=default,eso-vault-client ttl=1m
 vault read auth/kubernetes/config
 vault read auth/kubernetes/role/eso-vault
 
