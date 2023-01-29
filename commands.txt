@@ -51,6 +51,9 @@ vault policy write eso-vault-client eso-vault-client.hcl
 # check this
 vault write auth/kubernetes/login role=eso-vault jwt=$token_reviewer_jwt
 
+# vault-backend with k8s auth
+kubectl apply -f ./secret-store-k8s-auth.yaml
+
 ---
 # values.yaml
 https://github.com/external-secrets/external-secrets/blob/main/deploy/charts/external-secrets/values.yaml
