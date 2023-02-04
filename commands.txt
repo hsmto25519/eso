@@ -52,7 +52,8 @@ vault policy write eso-vault-client eso-vault-client.hcl
 vault write auth/kubernetes/login role=eso-vault jwt=$token_reviewer_jwt
 
 # vault-backend with k8s auth
-kubectl apply -f ./secret-store-k8s-auth.yaml
+kubectl apply -f ./secret-store-k8s-es.yaml
+kubectl apply -f ./secret-store-k8s-ss.yaml
 
 vault kv put eso/foo my-value=replace_secret
 
@@ -77,3 +78,6 @@ VAULT_ADDRESS=vault.vault.svc.cluster.local
 curl --request POST --data '{"jwt": "'"$JWT"'", "role": "eso-vault"}' -s -k http://${VAULT_ADDRESS}:8200/v1/auth/kubernetes/login
 
 kubectl run -it --rm --image=nginx --serviceaccount=vault-auth -n vault test -- /bin/bash
+
+kubectl exec vault-0 -n vault -- \
+vault write auth/kubernetes/login role=eso-vault jwt=$token_reviewer_jwt
